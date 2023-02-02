@@ -18,6 +18,17 @@ form{
     justify-content: space-around;
 }
 
+textarea{
+    resize: none;
+    border-radius: 5px;
+}
+
+hr{
+    width: 150px;
+    background-color: white;
+    border: 1px solid white;
+}
+
 #blocks_div{
     margin-top: 50px;
     display: flex;
@@ -28,11 +39,14 @@ form{
 .col{
     width: 350px;
     padding: 50px 0 50px 0;
-    border: 4px solid darkgray;
-    border-radius: 20px;
+    border-right: 4px solid darkgray;
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+#fifth_col{
+    border: none
 }
 
 .col_title{
@@ -51,6 +65,10 @@ form{
     color: white;
 }
 
+#upperFormDiv > div{
+    margin: 5px 0 5px 0;
+}
+
 #upperFormDiv > p{
     margin-left: 15px;
     display: block;
@@ -62,24 +80,23 @@ form{
     height: 20px;
 }
 
-#upperFormDiv > input[type=submit]{
-    margin: 2px 5px 2px 5px;
-}
-
 input[type=submit]{
     background-color: dodgerblue;
+    width: 140px;
+    height: 30px;
     color: white;
+    outline: none;
+
 }
 
 input{
     border-radius: 5px;
-    outline: none;
     border: none;
 }
 
 #card{
     height: 200px;
-    width: 300px;
+    width: 250px;
     margin: 20px 0 20px 0;
     background-color: lightblue;
     border-radius: 10px;
@@ -90,31 +107,7 @@ input{
 }
 
 #cardTitle{
-    font-size: 2em;
-}
-
-#pointslist{
-    list-style: decimal;
-}
-
-#pointslist > div {
-    width: 200px
-}
-
-#pointslist > div:hover {
-    text-decoration: line-through;
-    cursor: pointer;
-}
-
-#pointslist hr {
-    background-color: white;
-    border: 1px solid white;
-    margin-top: 2px;
-}
-
-#pointslist > div:hover > hr {
-    background-color: dodgerblue;
-    border: 1px solid dodgerblue;
+    font-size: 1.2em;
 }
 
 #errorp{
@@ -128,4 +121,26 @@ input{
 .TaskDone{
     text-decoration: line-through;
     cursor: pointer;
+}
+
+.cardDate{
+    font-size: 0.85em;
+}
+
+#change_button{
+    width: 100px;
+    height: 20px;
+    border-radius: 5px;
+    border: none;
+    background-color: dodgerblue;
+    color: white;
+}
+
+#delete_button{
+    width: 100px;
+    height: 20px;
+    border-radius: 5px;
+    border: none;
+    background-color: red;
+    color: white;
 }
