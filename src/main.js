@@ -69,13 +69,36 @@ Vue.component('main-board', {
                 this.blockOneCards.push({title: this.cardTitle ? this.cardTitle : 'Без названия', points: copy})
 
                 this.error = ''
+
+                let jsonData = JSON.stringify(this.allCardsByColumns)
+                localStorage.setItem('jsonData', jsonData)
+
             }else{
                 this.error = 'В первом столбце не может быть больше 3 карточек'
             }
         },
+        loadCards(){
+            let jsonData = JSON.parse(localStorage.getItem('jsonData'))
+
+            for(let i = 0; i < jsonData[0].length; i++){
+                this.blockOneCards.push(jsonData[0][i])
+            }
+
+            for(let i = 0; i < jsonData[1].length; i++){
+                this.blockTwoCards.push(jsonData[1][i])
+            }
+
+            for(let i = 0; i < jsonData[2].length; i++){
+                this.blockThreeCards.push(jsonData[2][i])
+            }
+        }
+    },
+    beforeMount(){
+        this.loadCards()
     },
     mounted(){
         eventBus.$on('pointCrossed', cardsCheck => {
+
             if(this.blockTwoCards.length < 5){
                 for(let i = 0; i < this.blockOneCards.length; i++){
                     let numbOfChecked = 0
@@ -85,7 +108,6 @@ Vue.component('main-board', {
                             numbOfChecked += 1
                         }
                     }
-
 
                     if(this.blockOneCards[i].points.length/2 <= numbOfChecked && this.blockOneCards[i].points.length !== numbOfChecked){
                         this.blockTwoCards.push(this.blockOneCards[i])
@@ -113,8 +135,15 @@ Vue.component('main-board', {
                     this.blockTwoCards.splice(i, 1)
                 }
             }
-        })
+            let jsonData = JSON.stringify(this.allCardsByColumns)
+            localStorage.setItem('jsonData', jsonData)
 
+        })
+    },
+    computed: {
+        allCardsByColumns() {
+            return [this.blockOneCards, this.blockTwoCards, this.blockThreeCards]
+        },
     }
 })
 
