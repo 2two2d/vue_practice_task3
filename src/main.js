@@ -1,3 +1,5 @@
+let eventBus = new Vue()
+
 Vue.component('main-board', {
     template: `
         <div id="main">
@@ -22,10 +24,10 @@ Vue.component('main-board', {
                     </form>
                 </div>
                 <div id="second_col" class="col">
-                    
+                    <point-card v-for="card in blockTwoCards" :pointsAndTitle="card"></point-card>
                 </div>
                 <div id="third_col" class="col">
-                    
+                    <point-card v-for="card in blockThreeCards" :pointsAndTitle="card"></point-card>
                 </div>
             </div>
         </div>
@@ -70,9 +72,49 @@ Vue.component('main-board', {
             }else{
                 this.error = 'В первом столбце не может быть больше 3 карточек'
             }
+        },
+    },
+    mounted(){
+        eventBus.$on('pointCrossed', cardsCheck => {
+            if(this.blockTwoCards.length < 5){
+                for(let i = 0; i < this.blockOneCards.length; i++){
+                    let numbOfChecked = 0
+
+                    for(let j = 0; j < this.blockOneCards[i].points.length; j++){
+                        if(this.blockOneCards[i].points[j].checked === true){
+                            numbOfChecked += 1
+                        }
+                    }
 
 
-        }
+                    if(this.blockOneCards[i].points.length/2 <= numbOfChecked && this.blockOneCards[i].points.length !== numbOfChecked){
+                        this.blockTwoCards.push(this.blockOneCards[i])
+                        this.blockOneCards.splice(i, 1)
+                    }
+                }
+                this.error = ''
+            }else{
+                this.error = 'Во втором столбце не может быть больше 5 карточек'
+            }
+
+
+            for(let i = 0; i < this.blockTwoCards.length; i++){
+                let numbOfChecked = 0
+
+                for(let j = 0; j < this.blockTwoCards[i].points.length; j++){
+                    if(this.blockTwoCards[i].points[j].checked === true){
+                        numbOfChecked += 1
+                    }
+                }
+
+
+                if(this.blockTwoCards[i].points.length === numbOfChecked){
+                    this.blockThreeCards.push(this.blockTwoCards[i])
+                    this.blockTwoCards.splice(i, 1)
+                }
+            }
+        })
+
     }
 })
 
@@ -81,7 +123,10 @@ Vue.component('point-card', {
         <div id="card">
             <p id="cardTitle">{{pointsAndTitle.title}}</p>
             <ul id="pointslist">
-                <div v-for="point in pointsAndTitle.points" @click="point.checked=true" :class="{checked:TaskDone}">
+                <div v-for="point in pointsAndTitle.points"
+                     @click="point.checked=true"
+                     @click="pointCrossed"
+                     :class="{TaskDone:point.checked}">
                     <li>{{point.point}}</li>
                     <hr>
                 </div>
@@ -90,6 +135,11 @@ Vue.component('point-card', {
     `,
     props:{
         pointsAndTitle: null
+    },
+    methods: {
+        pointCrossed(){
+            eventBus.$emit('pointCrossed')
+        }
     }
 })
 

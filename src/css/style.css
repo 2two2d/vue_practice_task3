@@ -117,11 +117,6 @@ input{
     font-size: 2em;
 }
 
-.TaskDone hr{
-    background-color: dodgerblue;
-    border: 1px solid dodgerblue;
-}
-
 .TaskDone{
     text-decoration: line-through;
     cursor: pointer;
