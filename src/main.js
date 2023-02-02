@@ -6,6 +6,7 @@ Vue.component('main-board', {
             <p id="errorp">{{error}}</p>
             <div id="blocks_div">
                 <div id="first_col" class="col">
+                    <p class="col_title">Создание задач</p>
                     <point-card v-for="card in blockOneCards" :pointsAndTitle="card"></point-card>
                     <form>
                         <div id="upperFormDiv">
@@ -15,8 +16,6 @@ Vue.component('main-board', {
                             </div>
                             <p>Количество заметок в карточке:</p>
                             <input type="number" max="5" min="3" v-model="numberOfOptions">
-                            
-                            
                             <input type="submit" value="Создать пункты" @click.prevent="makeOptionsArr" maxlength="20">
                         </div>
                         <input v-for="i in options" :key="i" class="pointInput" type="text" placeholder="пункт">
@@ -24,10 +23,18 @@ Vue.component('main-board', {
                     </form>
                 </div>
                 <div id="second_col" class="col">
+                    <p class="col_title" style="font-size: 1.5em">Запланированные задачи</p>
                     <point-card v-for="card in blockTwoCards" :pointsAndTitle="card"></point-card>
                 </div>
                 <div id="third_col" class="col">
+                    <p class="col_title">Задачи в работе</p>
                     <point-card v-for="card in blockThreeCards" :pointsAndTitle="card"></point-card>
+                </div>
+                <div id="forth_col" class="col">
+                    <p class="col_title">Тестирование</p>
+                </div>
+                <div id="fifth_col" class="col">
+                    <p class="col_title">Выполненные задачи</p>
                 </div>
             </div>
         </div>
