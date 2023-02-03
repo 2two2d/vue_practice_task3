@@ -82,6 +82,7 @@ Vue.component('main-board', {
                 this.error = 'В первом столбце не может быть больше 3 карточек'
             }
         },
+    },
 
     mounted(){
         eventBus.$on('cardDelete', ()=>{
