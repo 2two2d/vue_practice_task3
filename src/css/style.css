@@ -45,7 +45,7 @@ hr{
     align-items: center;
 }
 
-#fifth_col{
+#forth_col{
     border: none
 }
 
@@ -94,7 +94,8 @@ input{
     border: none;
 }
 
-#card{
+#card > div{
+    position: relative;
     height: 200px;
     width: 250px;
     margin: 20px 0 20px 0;
@@ -127,7 +128,7 @@ input{
     font-size: 0.85em;
 }
 
-#change_button{
+.just_button{
     width: 100px;
     height: 20px;
     border-radius: 5px;
@@ -136,7 +137,7 @@ input{
     color: white;
 }
 
-#delete_button{
+.danger_button{
     width: 100px;
     height: 20px;
     border-radius: 5px;
@@ -144,3 +145,29 @@ input{
     background-color: red;
     color: white;
 }
+
+.moveBackBtn, .moveForwardBtn{
+    margin-bottom: 50px;
+    background-color: dodgerblue;
+    color: white;
+    font-weight: 1000;
+    font-size: 1.3em;
+    border-radius: 100%;
+    border: none;
+    width: 40px;
+    height: 40px;
+    position: absolute;
+}
+
+.moveBackBtn{
+    top: 80px;
+    right: 230px;
+}
+
+.moveForwardBtn{
+    top: 80px;
+    left: 230px;
+}
+
+
+
