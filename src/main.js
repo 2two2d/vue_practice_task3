@@ -36,6 +36,7 @@ Vue.component('main-board', {
                 </div>
                 <div id="forth_col" class="col">
                     <p class="col_title">Выполненные задачи</p>
+                    <point-card v-for="card in blockForthCards" :pointsAndTitle="card"></point-card>
                 </div>
             </div>
         </div>
@@ -57,7 +58,10 @@ Vue.component('main-board', {
             if(this.blockOneCards.length < 3){
                 this.blockOneCards.push({title: this.cardTitle ? this.cardTitle : 'Без названия',
                                         task: this.cardTask ? this.cardTask : 'Задание',
+                                        canHaveComment: false,
+                                        comment: '',
                                         deadline: this.deadline,
+                                        deadlineJSDate: this.deadlineJSDate,
                                         createdAt: this.currentDate,
                                         updatedAt: null,
                                         toDelete: false,
@@ -65,7 +69,9 @@ Vue.component('main-board', {
                                         toMoveBack: false,
                                         toMoveForward: false,
                                         btnBack: false,
-                                        btnForward: true})
+                                        btnForward: true,
+                                        doneInTime: false,
+                                        inForthColumn: false})
 
                 this.error = ''
 
@@ -97,10 +103,65 @@ Vue.component('main-board', {
     },
     mounted(){
         eventBus.$on('cardDelete', ()=>{
-            for(let column in this.allCardsByColumns){
-                for(let card in column+1){
-                    if(this.allCardsByColumns[column][card].toDelete){
-                        this.allCardsByColumns[column].splice(card, 1)
+            for(let i = 0; i < this.allCardsByColumns.length; i++){
+                for(let j = 0; j < this.allCardsByColumns[i].length; j++){
+                    if(this.allCardsByColumns[i][j].toDelete){
+                        this.allCardsByColumns[i].splice(j, 1)
+                    }
+                }
+            }
+        })
+
+        eventBus.$on('cardMoveForward',()=>{
+            for(let i = 0; i < this.allCardsByColumns.length; i++){
+                for(let j = 0; j < this.allCardsByColumns[i].length; j++){
+                    if(this.allCardsByColumns[i][j].toMoveForward){
+                        if(i==0){
+                            this.allCardsByColumns[i][j].toMoveForward = false
+                            this.blockTwoCards.push(this.allCardsByColumns[i][j])
+                            this.allCardsByColumns[i].splice(j, 1)
+                        }else if(i==1){
+                            this.allCardsByColumns[i][j].btnBack = true
+                            this.allCardsByColumns[i][j].canHaveComment = true
+                            this.allCardsByColumns[i][j].toMoveForward = false
+                            this.blockThreeCards.push(this.allCardsByColumns[i][j])
+                            this.allCardsByColumns[i].splice(j, 1)
+                        }else if(i==2){
+                            if(this.allCardsByColumns[i][j].comment){
+                                this.allCardsByColumns[i][j].canHaveComment = true
+                            }else{
+                                this.allCardsByColumns[i][j].canHaveComment = false
+                            }
+                            if(this.allCardsByColumns[i][j].deadlineJSDate > new Date()){
+                                this.allCardsByColumns[i][j].doneInTime = true
+                                this.allCardsByColumns[i][j].inForthColumn = true
+                            }else{
+                                this.allCardsByColumns[i][j].doneInTime = false
+                                this.allCardsByColumns[i][j].inForthColumn = true
+                            }
+
+                            this.allCardsByColumns[i][j].toMoveForward = false
+                            this.allCardsByColumns[i][j].btnBack = false
+                            this.allCardsByColumns[i][j].btnForward = false
+                            this.blockForthCards.push(this.allCardsByColumns[i][j])
+                            this.allCardsByColumns[i].splice(j, 1)
+                        }
+                    }
+                }
+            }
+        })
+
+        eventBus.$on('cardMoveBack',()=>{
+            for(let i = 0; i < this.allCardsByColumns.length; i++){
+                for(let j = 0; j < this.allCardsByColumns[i].length; j++){
+                    if(this.allCardsByColumns[i][j].toMoveBack){
+                        if(!this.allCardsByColumns[i][j].comment){
+                            this.allCardsByColumns[i][j].canHaveComment = false
+                        }
+                        this.allCardsByColumns[i][j].btnBack = false
+                        this.allCardsByColumns[i][j].toMoveForward = true
+                        this.blockTwoCards.push(this.allCardsByColumns[i][j])
+                        this.allCardsByColumns[i].splice(j, 1)
                     }
                 }
             }
@@ -113,6 +174,9 @@ Vue.component('main-board', {
         deadline(){
             return new Date(new Date().getTime() + 24 * 60 * 60 * 1000 * 7).toISOString().substring(0,10)
         },
+        deadlineJSDate(){
+            return new Date(new Date().getTime() + 24 * 60 * 60 * 1000 * 7)
+        },
         currentDate() {
             return new Date().toISOString().substring(0,10)
         }
@@ -122,9 +186,9 @@ Vue.component('main-board', {
 Vue.component('point-card', {
     template: `
         <div id="card">
-            <div v-if="pointsAndTitle.toChange===false">
-                <button v-if="pointsAndTitle.btnBack" @click="moveForward()" class="moveBackBtn"><</button>
-                <button v-if="pointsAndTitle.btnForward" @click="moveBack()" class="moveForwardBtn">></button>
+            <div v-if="pointsAndTitle.toChange===false" class="cardside" v-bind:class="{'doneInTime': (pointsAndTitle.inForthColumn && pointsAndTitle.doneInTime), notDoneInTime:(!pointsAndTitle.doneInTime && pointsAndTitle.inForthColumn)}">
+                <button v-if="pointsAndTitle.btnBack" @click="pointsAndTitle.toMoveBack=true; moveBack()" class="moveBackBtn"><</button>
+                <button v-if="pointsAndTitle.btnForward" @click="pointsAndTitle.toMoveForward=true; moveForward()" class="moveForwardBtn">></button>
                 <p id="cardTitle">{{pointsAndTitle.title}}</p>
                 <hr>
                 <p>{{pointsAndTitle.task}}</p>
@@ -136,8 +200,11 @@ Vue.component('point-card', {
                     <button class="just_button" @click="pointsAndTitle.toChange=true">Изменить</button>
                     <button class="danger_button" @click="pointsAndTitle.toDelete=true; cardDelete()">Удалить</button>
                 </div>
+                <div class="returnSection" v-if="pointsAndTitle.canHaveComment">
+                    <textarea type="text" placeholder="Комментарий" v-model="pointsAndTitle.comment"></textarea>
+                </div>
             </div>
-            <div v-else>
+            <div v-else class="cardside">
                 <p>Название: <input type="text" v-model="reserveTitle"></p>
                 <p>Задание: <input type="text" v-model="reserveTask"></p>
                 <p>Дэдлайн: <input type="date" v-model="reserveDeadLine"></p>
@@ -178,8 +245,6 @@ Vue.component('point-card', {
         };
     }
 })
-
-
 let app = new Vue({
     el: '#app',
 })

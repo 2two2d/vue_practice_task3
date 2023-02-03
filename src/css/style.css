@@ -94,9 +94,9 @@ input{
     border: none;
 }
 
-#card > div{
+.cardside{
     position: relative;
-    height: 200px;
+    height: 250px;
     width: 250px;
     margin: 20px 0 20px 0;
     background-color: lightblue;
@@ -167,6 +167,14 @@ input{
 .moveForwardBtn{
     top: 80px;
     left: 230px;
+}
+
+.doneInTime{
+    background-color: lightgreen;
+}
+
+.notDoneInTime{
+    background-color: lightcoral;
 }
 
 
