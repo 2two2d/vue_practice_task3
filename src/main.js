@@ -82,25 +82,7 @@ Vue.component('main-board', {
                 this.error = 'В первом столбце не может быть больше 3 карточек'
             }
         },
-        loadCards(){
-            let jsonData = JSON.parse(localStorage.getItem('jsonData'))
 
-            for(let i = 0; i < jsonData[0].length; i++){
-                this.blockOneCards.push(jsonData[0][i])
-            }
-
-            for(let i = 0; i < jsonData[1].length; i++){
-                this.blockTwoCards.push(jsonData[1][i])
-            }
-
-            for(let i = 0; i < jsonData[2].length; i++){
-                this.blockThreeCards.push(jsonData[2][i])
-            }
-        }
-    },
-    beforeMount(){
-
-    },
     mounted(){
         eventBus.$on('cardDelete', ()=>{
             for(let i = 0; i < this.allCardsByColumns.length; i++){
