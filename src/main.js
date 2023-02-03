@@ -59,6 +59,7 @@ Vue.component('main-board', {
                 this.blockOneCards.push({title: this.cardTitle ? this.cardTitle : 'Без названия',
                                         task: this.cardTask ? this.cardTask : 'Задание',
                                         canHaveComment: false,
+                                        comments: [],
                                         comment: '',
                                         deadline: this.deadline,
                                         deadlineJSDate: this.deadlineJSDate,
@@ -71,10 +72,10 @@ Vue.component('main-board', {
                                         btnBack: false,
                                         btnForward: true,
                                         doneInTime: false,
-                                        inForthColumn: false})
+                                        inForthColumn: false,
+                                        inSecondColumn: false})
 
                 this.error = ''
-
                 let jsonData = JSON.stringify(this.allCardsByColumns)
                 localStorage.setItem('jsonData', jsonData)
 
@@ -106,6 +107,7 @@ Vue.component('main-board', {
                         }else if(i==1){
                             this.allCardsByColumns[i][j].btnBack = true
                             this.allCardsByColumns[i][j].canHaveComment = true
+                            this.allCardsByColumns[i][j].inSecondColumn = false
                             this.allCardsByColumns[i][j].toMoveForward = false
                             this.blockThreeCards.push(this.allCardsByColumns[i][j])
                             this.allCardsByColumns[i].splice(j, 1)
@@ -138,9 +140,9 @@ Vue.component('main-board', {
             for(let i = 0; i < this.allCardsByColumns.length; i++){
                 for(let j = 0; j < this.allCardsByColumns[i].length; j++){
                     if(this.allCardsByColumns[i][j].toMoveBack){
-                        if(!this.allCardsByColumns[i][j].comment){
-                            this.allCardsByColumns[i][j].canHaveComment = false
-                        }
+                        this.allCardsByColumns[i][j].comments.push(this.allCardsByColumns[i][j].comment)
+                        this.allCardsByColumns[i][j].comment = ''
+                        this.allCardsByColumns[i][j].inSecondColumn = true
                         this.allCardsByColumns[i][j].btnBack = false
                         this.allCardsByColumns[i][j].toMoveForward = true
                         this.blockTwoCards.push(this.allCardsByColumns[i][j])
@@ -180,11 +182,12 @@ Vue.component('point-card', {
                 <p class="cardDate">Дэдлайн: {{pointsAndTitle.deadline}}</p>
                 <p v-if="pointsAndTitle.updatedAt" class="cardDate">Обновлён: {{pointsAndTitle.updatedAt}}</p>
                 <div class="cardBtnsDiv">
-                    <button class="just_button" @click="pointsAndTitle.toChange=true">Изменить</button>
+                    <button v-if="!pointsAndTitle.inForthColumn" class="just_button" @click="pointsAndTitle.toChange=true">Изменить</button>
                     <button class="danger_button" @click="pointsAndTitle.toDelete=true; cardDelete()">Удалить</button>
                 </div>
                 <div class="returnSection" v-if="pointsAndTitle.canHaveComment">
-                    <textarea type="text" placeholder="Комментарий" v-model="pointsAndTitle.comment"></textarea>
+                    <p v-for="comment in pointsAndTitle.comments">{{comment}}</p>
+                    <textarea type="text" placeholder="Комментарий" v-model="pointsAndTitle.comment" v-if="!pointsAndTitle.inSecondColumn"></textarea>
                 </div>
             </div>
             <div v-else class="cardside">
