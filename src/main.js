@@ -3,12 +3,14 @@ let eventBus = new Vue()
 Vue.component('main-board', {
     template: `
         <div id="main">
-            <p id="errorp">{{error}}</p>
             <div id="blocks_div">
                 <div id="first_col" class="col">
                     <p class="col_title">Создание задач</p>
                     <point-card v-for="card in blockOneCards" :pointsAndTitle="card"></point-card>
-                    <form>
+                    <button class="just_button" style="width: 150px; height: 30px" @click="isModalWindow=true">Добавить запись</button>
+                    <div class="modalWindowClose" v-bind:class="{modalWindow: isModalWindow}">
+                        <button id="closeModalBtn" @click="isModalWindow=false">✖</button>
+                        <form>
                         <div id="upperFormDiv">
                             <div>
                                 <p>Название карточки:</p>
@@ -23,8 +25,9 @@ Vue.component('main-board', {
                                 <input type="date" v-model="deadline">
                             </div>       
                         </div>
-                        <input type="submit" @click.prevent="createCard" value="Создать карточку">
+                        <input type="submit" @click.prevent="createCard(); isModalWindow=false" value="Создать карточку">
                     </form>
+                    </div>
                 </div>
                 <div id="second_col" class="col">
                     <p class="col_title" style="font-size: 1.5em">Задачи в работе</p>
@@ -50,7 +53,7 @@ Vue.component('main-board', {
             blockTwoCards: [],
             blockThreeCards: [],
             blockForthCards: [],
-            renderComponent: true,
+            isModalWindow: false,
         }
     },
     methods: {
@@ -112,11 +115,9 @@ Vue.component('main-board', {
                             this.blockThreeCards.push(this.allCardsByColumns[i][j])
                             this.allCardsByColumns[i].splice(j, 1)
                         }else if(i==2){
-                            if(this.allCardsByColumns[i][j].comment){
-                                this.allCardsByColumns[i][j].canHaveComment = true
-                            }else{
-                                this.allCardsByColumns[i][j].canHaveComment = false
-                            }
+
+                            this.allCardsByColumns[i][j].canHaveComment = false
+
                             if(this.allCardsByColumns[i][j].deadlineJSDate > new Date()){
                                 this.allCardsByColumns[i][j].doneInTime = true
                                 this.allCardsByColumns[i][j].inForthColumn = true
@@ -185,9 +186,10 @@ Vue.component('point-card', {
                     <button v-if="!pointsAndTitle.inForthColumn" class="just_button" @click="pointsAndTitle.toChange=true">Изменить</button>
                     <button class="danger_button" @click="pointsAndTitle.toDelete=true; cardDelete()">Удалить</button>
                 </div>
-                <div class="returnSection" v-if="pointsAndTitle.canHaveComment">
+                <div class="returnSection" v-if="pointsAndTitle.comments">
+                    <p>Комментарии:</p>
                     <p v-for="comment in pointsAndTitle.comments">{{comment}}</p>
-                    <textarea type="text" placeholder="Комментарий" v-model="pointsAndTitle.comment" v-if="!pointsAndTitle.inSecondColumn"></textarea>
+                    <textarea type="text" placeholder="Комментарий" v-model="pointsAndTitle.comment" v-if="!pointsAndTitle.inSecondColumn && pointsAndTitle.canHaveComment"></textarea>
                 </div>
             </div>
             <div v-else class="cardside">
